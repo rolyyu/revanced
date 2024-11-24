@@ -9,14 +9,14 @@ BLUE="\033[1;34m"
 MAGENTA="\033[1;35m"
 CYAN="\033[1;36m"
 WHITE="\033[37m"
-msg() { echo -e $@${RESET}; }
-msg_red() { msg ${RED}$@; }
-msg_blue() { msg ${BLUE}$@; }
-msg_cyan() { msg ${CYAN}$@; }
-msg_green() { msg ${GREEN}$@; }
-msg_yellow() { msg ${YELLOW}$@; }
-msg_magenta() { msg ${MAGENTA}$@; }
-msg_white() { msg ${WHITE}$@; }
+msg() { echo -e "$*$RESET"; }
+msg_red() { msg "$RED$*"; }
+msg_blue() { msg "$BLUE$*"; }
+msg_cyan() { msg "$CYAN$*"; }
+msg_green() { msg "$GREEN$*"; }
+msg_yellow() { msg "$YELLOW$*"; }
+msg_magenta() { msg "$MAGENTA$*"; }
+msg_white() { msg "$WHITE$*"; }
 
 WORKING_DIR=$PWD
 TMP_DIR=$WORKING_DIR/tmp
@@ -26,7 +26,7 @@ RV_CLI_API="https://api.github.com/repos/revanced/revanced-cli/releases/latest"
 RV_PATCH_API="https://api.github.com/repos/revanced/revanced-patches/releases/latest"
 
 download_silent() {
-	curl -s -L -A "$USER_AGENT" $1 || { msg_red "Download faild ..." && exit 1; }
+	curl -s -L -A "$USER_AGENT" "$1" || { msg_red "Download faild ..." && exit 1; }
 }
 
 download_progress() {
@@ -55,8 +55,8 @@ download_apk() {
 	msg_cyan "==> Fetching $1 ..."
 	[ -z "$VERSION" ] && msg_red "No such version of [ $APP ][ v$VERSION ]" && exit 1
 	DOWNLOAD_HREF=$(download_silent "$1" | tr -d '\n' | sed 's|svg class|\n|g' | sed -nE "s|.*$arch.*nodpi.*accent_color\" href=\"([^\"]*)\".*|\1|p")
-	FINAL_HREF=$(download_silent "${APK_PROVIDER}$DOWNLOAD_HREF" | sed -nE 's|.*href="(.*\/download\/[^"]*)".*|\1|p' | sed 's|&amp;|\&|g')
-	DOWNLOAD_HREF=$(download_silent "${APK_PROVIDER}$FINAL_HREF" | sed -nE 's|.*href="(.*download.php[^"]*)".*|\1|p' | sed 's|&amp;|\&|g')
+	DOWNLOAD_HREF=$(download_silent "${APK_PROVIDER}$DOWNLOAD_HREF" | sed -nE 's|.*href="(.*\/download\/[^"]*)".*|\1|p' | sed 's|&amp;|\&|g')
+	DOWNLOAD_HREF=$(download_silent "${APK_PROVIDER}$DOWNLOAD_HREF" | sed -nE 's|.*href="(.*download.php[^"]*)".*|\1|p' | sed 's|&amp;|\&|g')
 	DOWNLOAD_URL="${APK_PROVIDER}$DOWNLOAD_HREF"
 
 	download_progress "$DOWNLOAD_URL" "$2"
@@ -183,11 +183,11 @@ main() {
 
 	msg_cyan "==> Patching $ORIGIN_APK ..."
 
-	cmd_patch="java -jar "$TMP_DIR/$RV_CLI_OUTPUT" patch \
-		--patches "$TMP_DIR/$RV_PATCH_OUTPUT" \
+	cmd_patch="java -jar $TMP_DIR/$RV_CLI_OUTPUT patch \
+		--patches $TMP_DIR/$RV_PATCH_OUTPUT \
 		--options "header=premium*header" \
-		--out "$RV_APK" \
-		-t "$TMP_DIR/revanced-resource-cache" \
+		--out $RV_APK \
+		-t $TMP_DIR/revanced-resource-cache \
 		$include_patches \
 		$exclude_patches \
 		$ORIGIN_APK"
@@ -195,4 +195,4 @@ main() {
 	eval "$cmd_patch"
 }
 
-main $@
+main "$@"
