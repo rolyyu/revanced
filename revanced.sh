@@ -62,19 +62,21 @@ download_apk() {
 	download_progress "$DOWNLOAD_URL" "$2"
 }
 
+package_name() {
+    case $1 in
+        youtube) echo "com.google.android.youtube";;
+        youtube-music) echo "com.google.android.apps.youtube.music";;
+        tiktok) echo "com.ss.android.ugc.trill";;
+        *) echo "none";;
+    esac
+}
+
 select_app() {
 	PS3="Select an app to build: "
 	select APP in youtube youtube-music tiktok
 	do
 	    case $APP in
-	        youtube)
-				PACKAGE_NAME="com.google.android.youtube"
-				break;;
-	        youtube-music)
-				PACKAGE_NAME="com.google.android.apps.youtube.music"
-				break;;
-			tiktok)
-				PACKAGE_NAME="com.ss.android.ugc.trill"
+	        youtube|youtube-music|tiktok)
 				break;;
 	        *)
 				msg_red "Ooops ..."
@@ -170,7 +172,7 @@ main() {
 	RV_PATCH_LIST=$(eval "$cmd_patch_list" | tr '\n\t' '#')
 
 	[ -z "$1" ] && select_app || APP=$1
-	[ -z "$2" ] && VERSION=$(echo "$RV_PATCH_LIST" | sed -nE "s|.*$PACKAGE_NAME##Compatible versions:[0-9\.\#]*###([0-9\.]*)##.*|\1|p") || VERSION=$2
+	[ -z "$2" ] && VERSION=$(echo "$RV_PATCH_LIST" | sed -nE "s|.*$(package_name $APP)##Compatible versions:[0-9\.\#]*###([0-9\.]*)##.*|\1|p") || VERSION=$2
 
 	config_app
 
