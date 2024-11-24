@@ -38,7 +38,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Upload apk
-          path: *.apk
+          path: ./*.apk
 
   publish:
     name: Publish Release
