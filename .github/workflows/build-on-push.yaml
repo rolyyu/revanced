@@ -1,0 +1,63 @@
+name: 🏗️ Build Revanced
+on:
+  push:
+    paths:
+      - .github/workflows/build-on-push.yaml
+  
+jobs:
+  build:
+    name: Build Revanced app
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        name: [
+          ubuntu-x86_64
+        ]
+        include:
+          - name: ubuntu-x86_64
+            os: ubuntu-latest
+            shell: bash
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+        
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build youtube
+        run: ./revanced.sh youtube
+
+      - name: Build youtube-music
+        run: ./revanced.sh youtube-music
+
+      - name: Build tiktok
+        run: ./revanced.sh tiktok
+          
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Upload apk
+          path: *.apk
+
+  publish:
+    name: Publish Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download ubuntu-x86_64 artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Release
+        run: |
+          NAME="Auto-Build $(date +'%Y-%m-%d %H:%M') ${SHORT_SHA}"
+          TAGNAME="autobuild-$(date +'%Y-%m-%d-%H-%M')-${SHORT_SHA}"
+          gh release create "${TAGNAME}" \
+          -t "${NAME}" \
+          $(ls *.apk)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
