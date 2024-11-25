@@ -37,7 +37,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Upload apk
+          name: artifacts
           path: ./*.apk
 
   publish:
@@ -45,11 +45,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Download ubuntu-x86_64 artifacts
         uses: actions/download-artifact@v4
+
+      - name: Unzip artifacts
+        run: unzip artifacts.zip
 
       - name: Release
         run: |
