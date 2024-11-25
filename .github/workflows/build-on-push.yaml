@@ -33,12 +33,15 @@ jobs:
 
       - name: Build tiktok
         run: ./revanced.sh tiktok
+
+      - name: Build tiktok
+        run: mkdir -p artifacts
           
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts.zip
-          path: ./*.apk
+          name: artifacts
+          path: ./artifacts
 
   publish:
     name: Publish Release
@@ -48,11 +51,8 @@ jobs:
       - name: Download ubuntu-x86_64 artifacts
         uses: actions/download-artifact@v4
         with:
-          name: artifacts.zip
-          path: artifacts.zip
-
-      - name: Unzip artifacts
-        run: unzip artifacts.zip
+          name: artifacts
+          path: ./artifacts
 
       - name: Release
         run: |
@@ -60,7 +60,7 @@ jobs:
           TAGNAME="autobuild-$(date +'%Y-%m-%d-%H-%M')-${SHORT_SHA}"
           gh release create "${TAGNAME}" \
           -t "${NAME}" \
-          $(ls *.apk)
+          $(ls ./artifacts)
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
