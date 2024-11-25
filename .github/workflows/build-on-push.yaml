@@ -35,8 +35,9 @@ jobs:
         run: ./revanced.sh tiktok
 
       - name: Build tiktok
-        run: mkdir -p artifacts
-        run: cp *.apk artifacts/
+        run: |
+          mkdir -p artifacts
+          cp *.apk artifacts/
           
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
