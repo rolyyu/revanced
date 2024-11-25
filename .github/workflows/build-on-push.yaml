@@ -47,6 +47,9 @@ jobs:
     steps:
       - name: Download ubuntu-x86_64 artifacts
         uses: actions/download-artifact@v4
+        with:
+          name: artifacts.zip
+          path: artifacts.zip
 
       - name: Unzip artifacts
         run: unzip artifacts.zip
