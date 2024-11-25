@@ -3,5 +3,6 @@
 /prebuilt/
 .DS_Store
 .idea
+.lh
 tmp/
 *-revanced-*
