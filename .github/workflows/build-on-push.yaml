@@ -71,9 +71,10 @@ jobs:
           TAGNAME=$(echo ${PATCHES} | sed -nE 's|.*version\":\"(.*)\",\"created_at.*|\1|p')
           TITLE="Revanced pacthes ${TAGNAME} $(date +'%Y-%m-%d %H:%M') ${SHORT_SHA}"
           NOTES=$(echo ${PATCHES} | sed -nE 's|.*description\":\"(.*)\",\"download_url.*|\1|p')
+          echo "${NOTES}" > NOTES
           gh release create "${TAGNAME}" \
           -t "${TITLE}" \
-          -n "${NOTES}" \
+          -F NOTES \
           $(find . -name '*.apk' -exec ls {} \;)
         env:
           GITHUB_TOKEN: ${{ github.token }}
