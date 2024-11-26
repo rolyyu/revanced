@@ -72,7 +72,7 @@ jobs:
           TITLE="Revanced pacthes ${TAGNAME} $(date +'%Y-%m-%d %H:%M') ${SHORT_SHA}"
           NOTES=$(echo ${PATCHES} | sed -nE 's|.*description\":\"(.*)\",\"download_url.*|\1|p')
           echo "${NOTES}" > NOTES
-          gh release create "${TAGNAME}" \
+          gh release create "${TAGNAME}-$(date +'%Y%m%d%H%M')" \
           -t "${TITLE}" \
           -F NOTES \
           $(find . -name '*.apk' -exec ls {} \;)
