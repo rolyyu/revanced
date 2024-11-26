@@ -40,7 +40,7 @@ jobs:
           path: youtube-music*.apk
 
   build_revanced_tiktok:
-    name: Build Revanced Youtube Music
+    name: Build Revanced Tiktok
     runs-on: ubuntu-latest
 
     steps:
@@ -67,11 +67,13 @@ jobs:
 
       - name: Release
         run: |
+          BODY="curl -X 'GET' 'https://api.revanced.app/v4/patches' -H 'accept: application/json' | sed -nE 's|.*description\":\"(.*)\",\"download_url.*|\1|p'"
           NAME="Auto-Build $(date +'%Y-%m-%d %H:%M') ${SHORT_SHA}"
           TAGNAME="autobuild-$(date +'%Y-%m-%d-%H-%M')-${SHORT_SHA}"
           gh release create "${TAGNAME}" \
           -t "${NAME}" \
-          $(ls *.apk)
+          -b "${BODY}"
+          $(find . -name '*.apk' -exec ls {} \;)
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
