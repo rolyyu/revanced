@@ -5,22 +5,10 @@ on:
       - .github/workflows/build-on-push.yaml
   
 jobs:
-  build:
-    name: Build Revanced app
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        name: [
-          ubuntu-x86_64
-        ]
-        include:
-          - name: ubuntu-x86_64
-            os: ubuntu-latest
-            shell: bash
-    defaults:
-      run:
-        shell: ${{ matrix.shell }}
-        
+  build_revanced_youtube:
+    name: Build Revanced Youtube
+    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,41 +16,62 @@ jobs:
       - name: Build youtube
         run: ./revanced.sh youtube
 
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: youtube
+          path: youtube*.apk
+
+  build_revanced_youtube_music:
+    name: Build Revanced Youtube Music
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Build youtube-music
         run: ./revanced.sh youtube-music
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: youtube-music
+          path: youtube-music*.apk
+
+  build_revanced_tiktok:
+    name: Build Revanced Youtube Music
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Build tiktok
         run: ./revanced.sh tiktok
 
-      - name: Compress artifacts
-        run: |
-          mkdir -p artifacts
-          cp *.apk artifacts/
-          tar czvf artifacts.tar.gz artifacts/
-          
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          path: artifacts.tar.gz
+          name: tiktok
+          path: tiktok*.apk
 
   publish:
     name: Publish Release
-    needs: build
+    needs: [build_revanced_youtube, build_revanced_youtube_music, build_revanced_tiktok]
     runs-on: ubuntu-latest
     steps:
-      - name: Download ubuntu-x86_64 artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts.tar.gz
+      - uses: actions/download-artifact@v4
+      - name: Download artifacts
+        run: ls -R
 
       - name: Release
         run: |
-          tar xzvf artifacts.tar.gz
           NAME="Auto-Build $(date +'%Y-%m-%d %H:%M') ${SHORT_SHA}"
           TAGNAME="autobuild-$(date +'%Y-%m-%d-%H-%M')-${SHORT_SHA}"
           gh release create "${TAGNAME}" \
           -t "${NAME}" \
-          $(ls ./artifacts)
+          $(ls *.apk)
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
