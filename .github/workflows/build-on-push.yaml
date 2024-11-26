@@ -67,12 +67,13 @@ jobs:
 
       - name: Release
         run: |
-          BODY="curl -X 'GET' 'https://api.revanced.app/v4/patches' -H 'accept: application/json' | sed -nE 's|.*description\":\"(.*)\",\"download_url.*|\1|p'"
+          NOTES="curl -X 'GET' 'https://api.revanced.app/v4/patches' -H 'accept: application/json' | sed -nE 's|.*description\":\"(.*)\",\"download_url.*|\1|p'"
+          echo "${NOTES}" > NOTES.txt
           NAME="Auto-Build $(date +'%Y-%m-%d %H:%M') ${SHORT_SHA}"
           TAGNAME="autobuild-$(date +'%Y-%m-%d-%H-%M')-${SHORT_SHA}"
           gh release create "${TAGNAME}" \
           -t "${NAME}" \
-          -b "${BODY}"
+          -F "${NOTES.txt}"
           $(find . -name '*.apk' -exec ls {} \;)
         env:
           GITHUB_TOKEN: ${{ github.token }}
