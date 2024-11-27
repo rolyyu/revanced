@@ -17,14 +17,18 @@ bash revanced.sh
 
 ## Thanks
 
-| revanced-cli         | [![revanced-cli](https://img.shields.io/github/v/release/ReVanced/revanced-cli?style=flat-square)](https://github.com/ReVanced/revanced-cli) |
-| -------------------- | ------------------------------------------------------------ |
+| Repo                 | version                                                      |
+| :------------------- | ------------------------------------------------------------ |
+| **revanced-cli**     | [![revanced-cli](https://img.shields.io/github/v/release/ReVanced/revanced-cli?style=flat-square)](https://github.com/ReVanced/revanced-cli) |
 | **revanced-patches** | [![revanced-patches](https://img.shields.io/github/v/release/ReVanced/revanced-patches?style=flat-square)](https://github.com/ReVanced/revanced-patches) |
 | **GmsCore**          | [![GmsCore](https://img.shields.io/github/v/release/ReVanced/GmsCore?style=flat-square)](https://github.com/ReVanced/GmsCore/releases) |
 
 
 ## Inspired by
 https://github.com/DemonKingSwarn/revanced-build
+
 https://github.com/FiorenMas/Revanced-And-Revanced-Extended-Non-Root
+
 https://github.com/revanced-apks/build-apps?tab=readme-ov-file
+
 https://github.com/renovate-bot/ckt1031-_-revanced-build-script
