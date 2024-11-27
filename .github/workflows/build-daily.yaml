@@ -22,9 +22,9 @@ jobs:
           MY_TAG=$(curl -s -L $MY_API | grep "tag_name" | sed -nE 's|.*name\": \"(.*)\",|\1|p')
 
           if [[ "$RV_TAG" == "${MY_TAG%-*}" ]]; then
-            echo "newer_version=true"  >> $GITHUB_OUTPUT
+            echo "::set-output name=newer_version::true"
           else
-            echo "newer_version=true"  >> $GITHUB_OUTPUT
+            echo "::set-output name=newer_version::true"
           fi
     
     outputs:
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs: [check_latest]
-    if: needs.checker.outputs.newer_version == 'true'
+    if: needs.check_latest.outputs.newer_version == 'true'
 
     steps:
       - name: Checkout repository
