@@ -1,5 +1,4 @@
-Revanced Builder
-=============
+# Revanced Builder
 
 [![Build Revanced on push](https://github.com/rolyyu/revanced/actions/workflows/build-on-push.yaml/badge.svg)](https://github.com/rolyyu/revanced/releases)
 
@@ -23,12 +22,12 @@ bash revanced.sh
 | **revanced-patches** | [![revanced-patches](https://img.shields.io/github/v/release/ReVanced/revanced-patches?style=flat-square)](https://github.com/ReVanced/revanced-patches) |
 | **GmsCore**          | [![GmsCore](https://img.shields.io/github/v/release/ReVanced/GmsCore?style=flat-square)](https://github.com/ReVanced/GmsCore/releases) |
 
-
 ## Inspired by
-https://github.com/DemonKingSwarn/revanced-build
 
-https://github.com/FiorenMas/Revanced-And-Revanced-Extended-Non-Root
+<https://github.com/DemonKingSwarn/revanced-build>
 
-https://github.com/revanced-apks/build-apps?tab=readme-ov-file
+<https://github.com/FiorenMas/Revanced-And-Revanced-Extended-Non-Root>
 
-https://github.com/renovate-bot/ckt1031-_-revanced-build-script
+<https://github.com/revanced-apks/build-apps?tab=readme-ov-file>
+
+<https://github.com/renovate-bot/ckt1031-_-revanced-build-script>
