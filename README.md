@@ -1,6 +1,6 @@
 # Revanced Builder
 
-[![Build Revanced on push](https://github.com/rolyyu/revanced/actions/workflows/build-on-push.yaml/badge.svg)](https://github.com/rolyyu/revanced/releases)
+[![Build Revanced on push](https://github.com/rolyyu/revanced/actions/workflows/build-daily.yaml/badge.svg)](https://github.com/rolyyu/revanced/releases)
 
 Simple shell script that will help you build the [ReVanced](https://github.com/ReVanced) APP.
 
