@@ -24,7 +24,7 @@ jobs:
           if [[ "$RV_TAG" == "${MY_TAG%-*}" ]]; then
             echo "newer_version=true" >> $GITHUB_OUTPUT
           else
-            echo "newer_version=false" >> $GITHUB_OUTPUT
+            echo "newer_version=true" >> $GITHUB_OUTPUT
           fi
     
     outputs:
