@@ -18,7 +18,7 @@ bash revanced.sh
 ## Thanks
 
 | Repo                 | version                                                      |
-| :------------------- | ------------------------------------------------------------ |
+| :------------------- | :----------------------------------------------------------- |
 | **revanced-cli**     | [![revanced-cli](https://img.shields.io/github/v/release/ReVanced/revanced-cli?style=flat-square)](https://github.com/ReVanced/revanced-cli) |
 | **revanced-patches** | [![revanced-patches](https://img.shields.io/github/v/release/ReVanced/revanced-patches?style=flat-square)](https://github.com/ReVanced/revanced-patches) |
 | **GmsCore**          | [![GmsCore](https://img.shields.io/github/v/release/ReVanced/GmsCore?style=flat-square)](https://github.com/ReVanced/GmsCore/releases) |
