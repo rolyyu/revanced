@@ -20,7 +20,7 @@ jobs:
           RV_TAG=$(curl -s -L $RV_PATCH_API | grep "tag_name" | sed -nE 's|.*name\": \"(.*)\",|\1|p')
           MY_TAG=$(curl -s -L $MY_API | grep "tag_name" | sed -nE 's|.*name\": \"(.*)\",|\1|p')
 
-          if [ $RV_TAG == ${MY_TAG%-*} ]; then
+          if [[ $RV_TAG == ${MY_TAG%-*} ]]; then
             echo "newer_version=true"  >> $GITHUB_OUTPUT
           else
             echo "newer_version=false"  >> $GITHUB_OUTPUT
