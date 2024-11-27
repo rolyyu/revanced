@@ -69,12 +69,11 @@ jobs:
         run: |
           PATCHES=$(curl -X 'GET' 'https://api.revanced.app/v4/patches' -H 'accept: application/json')
           TAGNAME=$(echo ${PATCHES} | sed -nE 's|.*version\":\"(.*)\",\"created_at.*|\1|p')
-          TITLE="Revanced pacthes ${TAGNAME} $(date +'%Y-%m-%d %H:%M') ${SHORT_SHA}"
+          TITLE="Revanced APP pacthes ${TAGNAME} $(date +'%Y-%m-%d %H:%M')"
           NOTES=$(echo ${PATCHES} | sed -nE 's|.*description\":\"(.*)\",\"download_url.*|\1|p')
-          echo "${NOTES}" > NOTES
           gh release create "${TAGNAME}-$(date +'%Y%m%d%H%M')" \
           -t "${TITLE}" \
-          -F NOTES \
+          -n "${NOTES//'\n'/$'\n'}" \
           $(find . -name '*.apk' -exec ls {} \;)
         env:
           GITHUB_TOKEN: ${{ github.token }}
