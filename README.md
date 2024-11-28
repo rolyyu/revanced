@@ -31,3 +31,5 @@ bash revanced.sh
 <https://github.com/revanced-apks/build-apps?tab=readme-ov-file>
 
 <https://github.com/renovate-bot/ckt1031-_-revanced-build-script>
+
+<https://github.com/nikhilbadyal/docker-py-revanced>
