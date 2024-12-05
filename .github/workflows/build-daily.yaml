@@ -107,7 +107,7 @@ jobs:
           NOTES=$(echo ${PATCHES} | sed -nE 's|.*body\": \"(.*)\", \"reactions.*|\1|p')
           gh release create "${TAGNAME}-$(date +'%Y%m%d%H%M')" \
           -t "${TITLE}" \
-          -n "${NOTES//'\n'/$'\n'}" \
+          -n "${NOTES//'\r\n'/$'\n'}" \
           $(find . -name '*.apk' -exec ls {} \;)
         env:
           GITHUB_TOKEN: ${{ github.token }}
