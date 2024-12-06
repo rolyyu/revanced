@@ -9,14 +9,14 @@ BLUE="\033[1;34m"
 MAGENTA="\033[1;35m"
 CYAN="\033[1;36m"
 WHITE="\033[37m"
-msg() { echo -e "$*$RESET"; }
-msg_red() { msg "$RED$*"; }
-msg_blue() { msg "$BLUE$*"; }
-msg_cyan() { msg "$CYAN$*"; }
-msg_green() { msg "$GREEN$*"; }
-msg_yellow() { msg "$YELLOW$*"; }
-msg_magenta() { msg "$MAGENTA$*"; }
-msg_white() { msg "$WHITE$*"; }
+msg() { echo -e "$*"; }
+msg_red() { msg "$RED$*$RESET"; }
+msg_blue() { msg "$BLUE$*$RESET"; }
+msg_cyan() { msg "$CYAN$*$RESET"; }
+msg_green() { msg "$GREEN$*$RESET"; }
+msg_yellow() { msg "$YELLOW$*$RESET"; }
+msg_magenta() { msg "$MAGENTA$*$RESET"; }
+msg_white() { msg "$WHITE$*$RESET"; }
 
 WORKING_DIR=$PWD
 TMP_DIR=$WORKING_DIR/tmp
@@ -54,21 +54,12 @@ download_rv_cli_patches() {
 download_apk() {
 	msg_cyan "==> Fetching $1 ..."
 	[ -z "$VERSION" ] && msg_red "No such version of [ $APP ][ v$VERSION ]" && exit 1
-	DOWNLOAD_HREF=$(download_silent "$1" | tr -d '\n' | sed 's|svg class|\n|g' | sed -nE "s|.*$arch.*nodpi.*accent_color\" href=\"([^\"]*)\".*|\1|p")
+	DOWNLOAD_HREF=$(download_silent "$1" | tr -d '\n' | sed 's|svg class|\n|g' | sed -nE "s|.*$ARCH.*nodpi.*accent_color\" href=\"([^\"]*)\".*|\1|p")
 	DOWNLOAD_HREF=$(download_silent "${APK_PROVIDER}$DOWNLOAD_HREF" | sed -nE 's|.*href="(.*\/download\/[^"]*)".*|\1|p' | sed 's|&amp;|\&|g')
 	DOWNLOAD_HREF=$(download_silent "${APK_PROVIDER}$DOWNLOAD_HREF" | sed -nE 's|.*href="(.*download.php[^"]*)".*|\1|p' | sed 's|&amp;|\&|g')
 	DOWNLOAD_URL="${APK_PROVIDER}$DOWNLOAD_HREF"
 
 	download_progress "$DOWNLOAD_URL" "$2"
-}
-
-package_name() {
-    case $1 in
-        youtube) echo "com.google.android.youtube";;
-        youtube-music) echo "com.google.android.apps.youtube.music";;
-        tiktok) echo "com.ss.android.ugc.trill";;
-        *) echo "none";;
-    esac
 }
 
 select_app() {
@@ -85,24 +76,50 @@ select_app() {
 	done
 }
 
+select_verion() {
+	case $APP in
+		youtube)
+			PACKAGE_NAME="com.google.android.youtube"
+			;;
+		youtube-music)
+			PACKAGE_NAME="com.google.android.apps.youtube.music"
+			;;
+		tiktok)
+			PACKAGE_NAME="com.ss.android.ugc.trill"
+			;;
+		*)
+			msg_red "Please select 'youtube', 'youtube-music' or 'tiktok'"
+			exit 1
+			;;
+	esac
+	VERSION=$(echo "$RV_PATCH_LIST" | sed -nE "s|.*${PACKAGE_NAME}##Compatible versions:[0-9\.\#]*###([0-9\.]*)##.*|\1|p")
+}
+
 config_app() {
 	case $APP in
 		youtube)
-			arch="universal"
+			ARCH="universal"
 			APK_URL="$APK_PROVIDER/apk/google-inc/$APP/$APP-$VERSION-release/"
-			include_patch_list=("Change header")
+			include_patch_list=(
+				"Change header"
+				)
 			exclude_patch_list=()
 			;;
 		youtube-music)
-			arch="arm64-v8a"
+			ARCH="arm64-v8a"
 			APK_URL="$APK_PROVIDER/apk/google-inc/$APP/$APP-$VERSION-release/"
-			include_patch_list=("Permanent shuffle" "Permanent repeat" "Hide category bar")
+			include_patch_list=(
+				"Permanent repeat"
+				"Hide category bar"
+				)
 			exclude_patch_list=()
 			;;
 		tiktok)
-			arch="arm64-v8a"
+			ARCH="arm64-v8a"
 			APK_URL="$APK_PROVIDER/apk/$APP-pte-ltd/tik-tok-including-musical-ly/tik-tok-including-musical-ly-$VERSION-release/"
-			include_patch_list=("SIM spoof")
+			include_patch_list=(
+				"SIM spoof"
+				)
 			exclude_patch_list=()
 			;;
 		*)
@@ -124,7 +141,7 @@ check_include_exclude() {
 				res="${RED} ✖"
 				check=1
 			fi
-			msg "$res" "$i"
+			msg "$res" "$i" "${RESET}"
 		done
 	else
 		msg_yellow "Nothing to Include"
@@ -141,7 +158,7 @@ check_include_exclude() {
 				res="${RED} ✖"
 				check=1
 			fi
-			msg "$res" "$i"
+			msg "$res" "$i" "${RESET}"
 		done
 	else
 		msg_yellow "Nothing to Exclude"
@@ -172,12 +189,12 @@ main() {
 	RV_PATCH_LIST=$(eval "$cmd_patch_list" | tr '\n\t' '#')
 
 	[ -z "$1" ] && select_app || APP=$1
-	[ -z "$2" ] && VERSION=$(echo "$RV_PATCH_LIST" | sed -nE "s|.*$(package_name $APP)##Compatible versions:[0-9\.\#]*###([0-9\.]*)##.*|\1|p") || VERSION=$2
+	[ -z "$2" ] && select_verion || VERSION=$2
 
 	config_app
 
 	ORIGIN_APK="$TMP_DIR/$APP-$VERSION.apk"
-	RV_APK="$PWD/$APP-$VERSION-revanced-patches-$RV_PATCH_VERSION.apk"
+	RV_APK="$WORKING_DIR/$APP-$VERSION-revanced-patches-$RV_PATCH_VERSION.apk"
 
 	download_apk "$APK_URL" "$ORIGIN_APK"
 
