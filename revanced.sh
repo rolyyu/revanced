@@ -204,11 +204,12 @@ main() {
 
 	cmd_patch="java -jar $TMP_DIR/$RV_CLI_OUTPUT patch \
 		--patches $TMP_DIR/$RV_PATCH_OUTPUT \
-		--options "header=premium*header" \
-		--out $RV_APK \
-		-t $TMP_DIR/revanced-resource-cache \
+		--keystore revanced.keystore \
+		--temporary-files-path $TMP_DIR/revanced-tmp \
 		$include_patches \
 		$exclude_patches \
+		--options \"header=premium*header\" \
+		--out $RV_APK \
 		$ORIGIN_APK"
 	msg_white "$cmd_patch" | tr -d '\t'
 	eval "$cmd_patch"
