@@ -80,12 +80,15 @@ select_verion() {
 	case $APP in
 		youtube)
 			PACKAGE_NAME="com.google.android.youtube"
+			APK_INFO_URL="$APK_PROVIDER/apk/google-inc/$APP/"
 			;;
 		youtube-music)
 			PACKAGE_NAME="com.google.android.apps.youtube.music"
+			APK_INFO_URL="$APK_PROVIDER/apk/google-inc/$APP/"
 			;;
 		tiktok)
 			PACKAGE_NAME="com.ss.android.ugc.trill"
+			APK_INFO_URL="$APK_PROVIDER/apk/$APP-pte-ltd/tik-tok-including-musical-ly/"
 			;;
 		*)
 			msg_red "Please select 'youtube', 'youtube-music' or 'tiktok'"
@@ -93,6 +96,7 @@ select_verion() {
 			;;
 	esac
 	VERSION=$(echo "$RV_PATCH_LIST" | sed -nE "s|.*${PACKAGE_NAME}##Compatible versions:[0-9\.\#]*###([0-9\.]*)##.*|\1|p")
+	[ -z "$VERSION" ] && VERSION=$(download_silent "$APK_INFO_URL" | grep "About" | sed -nE "s|.*About .* ([0-9\.]*).*|\1|p")
 }
 
 config_app() {
