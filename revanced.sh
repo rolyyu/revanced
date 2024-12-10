@@ -80,38 +80,47 @@ select_verion() {
 	case $APP in
 		youtube)
 			PACKAGE_NAME="com.google.android.youtube"
-			APK_INFO_URL="$APK_PROVIDER/apk/google-inc/$APP/"
+			COMPANY=google-inc
+			PRODUCT=youtube
+			ARCH="universal"
 			;;
 		youtube-music)
 			PACKAGE_NAME="com.google.android.apps.youtube.music"
-			APK_INFO_URL="$APK_PROVIDER/apk/google-inc/$APP/"
+			COMPANY=google-inc
+			PRODUCT=youtube-music
+			ARCH="arm64-v8a"
 			;;
 		tiktok)
 			PACKAGE_NAME="com.ss.android.ugc.trill"
-			APK_INFO_URL="$APK_PROVIDER/apk/$APP-pte-ltd/tik-tok-including-musical-ly/"
+			COMPANY=tiktok-pte-ltd
+			PRODUCT=tik-tok-including-musical-ly
+			ARCH="arm64-v8a"
 			;;
 		*)
 			msg_red "Please select 'youtube', 'youtube-music' or 'tiktok'"
 			exit 1
 			;;
 	esac
+
+	APK_INFO_URL="$APK_PROVIDER/apk/$COMPANY/$PRODUCT"
+
 	VERSION=$(echo "$RV_PATCH_LIST" | sed -nE "s|.*${PACKAGE_NAME}##Compatible versions:[0-9\.\#]*###([0-9\.]*)##.*|\1|p")
-	[ -z "$VERSION" ] && VERSION=$(download_silent "$APK_INFO_URL" | grep "About" | sed -nE "s|.*About .* ([0-9\.]*).*|\1|p")
+	if [ -z "$VERSION" ]; then
+		VERSION=$(download_silent "$APK_INFO_URL" | grep "About" | sed -nE "s|.*About .* ([0-9\.]*).*|\1|p")
+	fi
+
+	APK_URL="$APK_INFO_URL/$PRODUCT-$VERSION-release/"
 }
 
-config_app() {
+check_include_exclude() {
 	case $APP in
 		youtube)
-			ARCH="universal"
-			APK_URL="$APK_PROVIDER/apk/google-inc/$APP/$APP-$VERSION-release/"
 			include_patch_list=(
 				"Change header"
 				)
 			exclude_patch_list=()
 			;;
 		youtube-music)
-			ARCH="arm64-v8a"
-			APK_URL="$APK_PROVIDER/apk/google-inc/$APP/$APP-$VERSION-release/"
 			include_patch_list=(
 				"Permanent repeat"
 				"Hide category bar"
@@ -119,8 +128,6 @@ config_app() {
 			exclude_patch_list=()
 			;;
 		tiktok)
-			ARCH="arm64-v8a"
-			APK_URL="$APK_PROVIDER/apk/$APP-pte-ltd/tik-tok-including-musical-ly/tik-tok-including-musical-ly-$VERSION-release/"
 			include_patch_list=(
 				"SIM spoof"
 				)
@@ -131,9 +138,6 @@ config_app() {
 			exit 1
 			;;
 	esac
-}
-
-check_include_exclude() {
 	msg_cyan "==> Checking Patches for including and excluding ..."
 	if [ -n "$include_patch_list" ]; then
 		msg_magenta "Including Patches ..."
@@ -194,8 +198,6 @@ main() {
 
 	[ -z "$1" ] && select_app || APP=$1
 	[ -z "$2" ] && select_verion || VERSION=$2
-
-	config_app
 
 	ORIGIN_APK="$TMP_DIR/$APP-$VERSION.apk"
 	RV_APK="$WORKING_DIR/$APP-$VERSION-revanced-patches-$RV_PATCH_VERSION.apk"
