@@ -102,12 +102,14 @@ jobs:
       - name: Release
         run: |
           PATCHES=$(curl -s -L $RV_PATCH_API)
-          TAGNAME=$(echo ${PATCHES} | sed -nE 's|.*tag_name\": \"(.*)\", \"target_commitish.*|\1|p')
-          TITLE="Revanced APP pacthes ${TAGNAME} $(date +'%Y-%m-%d %H:%M')"
+          RV_TAG=$(echo ${PATCHES} | sed -nE 's|.*tag_name\": \"(.*)\", \"target_commitish.*|\1|p')
+          TITLE="Revanced APP pacthes ${RV_TAG} $(date +'%Y-%m-%d %H:%M')"
           NOTES=$(echo ${PATCHES} | sed -nE 's|.*body\": \"(.*)\", \"reactions.*|\1|p')
-          gh release create "${TAGNAME}-$(date +'%Y%m%d%H%M')" \
+          NOTES=${NOTES//'\r\n'/$'\n'}
+          NOTES=${NOTES//'\n'/$'\n'}
+          gh release create "${RV_TAG}-$(date +'%Y%m%d%H%M')" \
           -t "${TITLE}" \
-          -n "${NOTES//'\r\n'/$'\n'}" \
+          -n "${NOTES}" \
           $(find . -name '*.apk' -exec ls {} \;)
         env:
           GITHUB_TOKEN: ${{ github.token }}
