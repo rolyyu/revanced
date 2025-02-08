@@ -91,7 +91,7 @@ select_verion() {
 			ARCH="arm64-v8a"
 			;;
 		tiktok)
-			PACKAGE_NAME="com.ss.android.ugc.trill"
+			PACKAGE_NAME="com.zhiliaoapp.musically"
 			COMPANY=tiktok-pte-ltd
 			PRODUCT=tik-tok-including-musical-ly
 			ARCH="arm64-v8a"
