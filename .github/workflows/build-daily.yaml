@@ -111,6 +111,10 @@ jobs:
           -t "${TITLE}" \
           -n "${NOTES}" \
           $(find . -name '*.apk' -exec ls {} \;)
+          gh release list --limit 100 \
+            | awk '{print $1}' \
+            | tail -n +2 \
+            | xargs -n 1 gh release delete -y --cleanup-tag
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
