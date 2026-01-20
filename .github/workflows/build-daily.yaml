@@ -111,10 +111,10 @@ jobs:
           -t "${TITLE}" \
           -n "${NOTES}" \
           $(find . -name '*.apk' -exec ls {} \;)
-          gh release list --limit 100 \
-            | awk '{print $1}' \
-            | tail -n +2 \
-            | xargs -n 1 gh release delete -y --cleanup-tag
+          LATEST_TAG=$(gh release list --limit 1 --json tagName -q '.[0].tagName')
+          gh release list --limit 100 --json tagName -q '.[].tagName' \
+            | grep -v "^${LATEST_TAG}$" \
+            | xargs -r -n 1 gh release delete -y --cleanup-tag
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
