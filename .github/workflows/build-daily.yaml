@@ -1,7 +1,5 @@
 name: 🏗️ Build Revanced
 on:
-  schedule:
-    - cron: '0 6 * * *'
   push:
     paths:
       - .github/workflows/build-daily.yaml
