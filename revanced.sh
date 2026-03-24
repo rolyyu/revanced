@@ -21,12 +21,12 @@ msg_white() { msg "$WHITE$*$RESET"; }
 WORKING_DIR=$PWD
 TMP_DIR=$WORKING_DIR/tmp
 APK_PROVIDER="https://www.apkmirror.com"
-USER_AGENT="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+USER_AGENT="Mozilla/5.0 (Android 16; Mobile; rv:148.0) Gecko/148.0 Firefox/148.0"
 RV_CLI_API="https://api.github.com/repos/revanced/revanced-cli/releases/latest"
 RV_PATCH_API="https://api.github.com/repos/revanced/revanced-patches/releases/latest"
 
 download_silent() {
-	curl -s -L -A "$USER_AGENT" "$1" || { msg_red "Download faild ..." && exit 1; }
+	wget -qnv -O - --header="User-Agent: $USER_AGENT" --header="Content-Type: application/octet-stream" --header="Accept-Language: en-US,en;q=0.9" --header="Connection: keep-alive" --header="Upgrade-Insecure-Requests: 1" --header="Cache-Control: max-age=0" --header="Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" --keep-session-cookies --timeout=30 "$1" || { msg_red "Download faild ..." && exit 1; }
 }
 
 download_progress() {
@@ -34,7 +34,7 @@ download_progress() {
 		msg_green " ${2##*/} has already downloaded"
 	else
 		msg_cyan "==> Downloading $1"
-		curl --progress-bar -L -A "$USER_AGENT" "$1" -o "$2" || { msg_red "Download faild ..." && exit 1; }
+		wget --show-progress --progress=bar:force -O "$2" --header="User-Agent: $USER_AGENT" --header="Content-Type: application/octet-stream" --header="Accept-Language: en-US,en;q=0.9" --header="Connection: keep-alive" --header="Upgrade-Insecure-Requests: 1" --header="Cache-Control: max-age=0" --header="Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" --keep-session-cookies --timeout=30 "$1" || { msg_red "Download faild ..." && exit 1; }
 		msg_green "🍺 $2"
 	fi
 }
@@ -54,7 +54,7 @@ download_rv_cli_patches() {
 download_apk() {
 	msg_cyan "==> Fetching $1 ..."
 	[ -z "$VERSION" ] && msg_red "No such version of [ $APP ][ v$VERSION ]" && exit 1
-	DOWNLOAD_HREF=$(download_silent "$1" | tr -d '\n' | sed 's|svg class|\n|g' | sed -nE "s|.*$ARCH.*nodpi.*accent_color\" href=\"([^\"]*)\".*|\1|p")
+	DOWNLOAD_HREF=$(download_silent "$1" | awk -v RS='<div class="table-row' -v a="$ARCH" '$0 ~ a && /nodpi/ {print $0}' | grep -B 1 "download-button-icon" | grep -oP 'href="\K[^"]+' | head -n 1)
 	DOWNLOAD_HREF=$(download_silent "${APK_PROVIDER}$DOWNLOAD_HREF" | sed -nE 's|.*href="(.*\/download\/[^"]*)".*|\1|p' | sed 's|&amp;|\&|g')
 	DOWNLOAD_HREF=$(download_silent "${APK_PROVIDER}$DOWNLOAD_HREF" | sed -nE 's|.*href="(.*download.php[^"]*)".*|\1|p' | sed 's|&amp;|\&|g')
 	DOWNLOAD_URL="${APK_PROVIDER}$DOWNLOAD_HREF"
@@ -76,7 +76,7 @@ select_app() {
 	done
 }
 
-select_verion() {
+select_version() {
 	case $APP in
 		youtube)
 			PACKAGE_NAME="com.google.android.youtube"
@@ -189,15 +189,15 @@ main() {
 	download_rv_cli_patches
 
 	cmd_patch_list="java -jar $TMP_DIR/$RV_CLI_OUTPUT list-patches \
-		$TMP_DIR/$RV_PATCH_OUTPUT \
-		--with-descriptions=false \
-		--with-packages \
-		--with-versions"
+		--patches $TMP_DIR/$RV_PATCH_OUTPUT \
+		--bypass-verification \
+		--packages \
+		--versions"
 
 	RV_PATCH_LIST=$(eval "$cmd_patch_list" | tr '\n\t' '#')
 
 	[ -z "$1" ] && select_app || APP=$1
-	[ -z "$2" ] && select_verion || VERSION=$2
+	[ -z "$2" ] && select_version || VERSION=$2
 
 	ORIGIN_APK="$TMP_DIR/$APP-$VERSION.apk"
 	RV_APK="$WORKING_DIR/$APP-$VERSION-revanced-patches-$RV_PATCH_VERSION.apk"
@@ -210,6 +210,7 @@ main() {
 
 	cmd_patch="java -jar $TMP_DIR/$RV_CLI_OUTPUT patch \
 		--patches $TMP_DIR/$RV_PATCH_OUTPUT \
+		--bypass-verification \
 		--keystore revanced.keystore \
 		--temporary-files-path $TMP_DIR/revanced-tmp \
 		$include_patches \
